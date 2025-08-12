@@ -41,8 +41,8 @@ def register():
         password = request.form.get("password")
 
         cursor = db.cursor()
-        sql = "INSERT INTO users (username, password) VALUES (%s, %s)"
-        cursor.execute(sql, (username, password))
+        sql_user = "INSERT INTO users (username, password) VALUES (%s, %s)"
+        cursor.execute(sql_user, (username, password))
         db.commit()
         
         return redirect("/")
@@ -50,8 +50,17 @@ def register():
     return render_template("register.html")
 
 
-@app.route("/welcome")
+@app.route("/welcome", methods = ["GET", "POST"])
 def welcome():
+    if request.method == "POST":
+        post = request.form.get("post")
+
+        cursor = db.cursor()
+        sql_post = "INSERT INTO post (post) VALUES (%s)" 
+        cursor.execute(sql_post, (post,))
+        db.commit
+        
+        return redirect ("/welcome")
     return render_template("welcome.html")
  
 
