@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for , session
 import pymysql 
 import os
 
 app = Flask(__name__)
+app.secret_key = 'uma_chave_secreta_qualquer'
 
 db = pymysql.connect(
     host = "localhost",
@@ -23,15 +24,27 @@ def login():
         password = request.form.get("password")
 
         cursor = db.cursor()
+        sql = "SELECT id FROM users WHERE username= %s"
+        cursor.execute(sql, (username))
+        user = cursor.fetchone()
+
+        if user:
+            session['user_id']= user[0]
+        else :
+            return "Usuário não encontrado", 404
+
+        cursor = db.cursor()
         sql = "SELECT username FROM users WHERE password=%s"
         cursor.execute(sql, (password))
         result = cursor.fetchone()
+      
 
         if result:
             return redirect (url_for("welcome"))
         else:
             return render_template("login.html",
             error="Invalid username or password")
+
     return render_template("login.html")
 
 @app.route("/register",methods = ["GET", "POST"])
@@ -54,10 +67,11 @@ def register():
 def welcome():
     if request.method == "POST":
         post = request.form.get("post")
+        user_id = session['user_id']
 
         cursor = db.cursor()
-        sql_post = "INSERT INTO post (post) VALUES (%s)" 
-        cursor.execute(sql_post, (post,))
+        sql_post = "INSERT INTO post (post, user_id) VALUES (%s, %s)" 
+        cursor.execute(sql_post, (post, user_id))
         db.commit
         
         return redirect ("/welcome")
