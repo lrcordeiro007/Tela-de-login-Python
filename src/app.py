@@ -11,8 +11,12 @@ db = pymysql.connect(
     database ="login_screen"
 
 )
+@app.route("/")
+def start():
+    return render_template("start.html")
 
-@app.route("/", methods = ["GET", "POST"])
+
+@app.route("/login", methods = ["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form.get("username")
@@ -49,6 +53,8 @@ def register():
 @app.route("/welcome")
 def welcome():
     return render_template("welcome.html")
+ 
+
 
 if __name__== "__main__":
     app.run(debug=True)
