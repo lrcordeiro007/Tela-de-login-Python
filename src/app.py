@@ -72,7 +72,7 @@ def welcome():
         cursor = db.cursor()
         sql_post = "INSERT INTO post (post, user_id) VALUES (%s, %s)" 
         cursor.execute(sql_post, (post, user_id))
-        db.commit
+        db.commit()
         
         return redirect ("/welcome")
     return render_template("welcome.html")
